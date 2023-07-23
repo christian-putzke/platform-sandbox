@@ -28,8 +28,8 @@ namespace plasa.gameplay.player
 
 		private void FixedUpdate()
 		{
-			var direction = _inputActions.Player.Move.ReadValue<float>();
-			_rigidbody.AddForce(new Vector3(direction, 0f, 0f) * _movementSpeed, ForceMode.Force);
+			var direction = _inputActions.Player.Move.ReadValue<Vector2>();
+			_rigidbody.AddForce(new Vector3(direction.x, 0f, 0f) * _movementSpeed, ForceMode.Force);
 		}
 
 		public void Jump(InputAction.CallbackContext context)

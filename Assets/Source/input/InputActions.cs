@@ -61,9 +61,20 @@ namespace plasa.input
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""1D Axis"",
+                    ""name"": """",
+                    ""id"": ""c268bbc0-bcd5-4ad5-bf87-4983a9046d49"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
                     ""id"": ""2fd73cc4-8be8-4313-bd8b-d84141bd6c51"",
-                    ""path"": ""1DAxis(whichSideWins=1)"",
+                    ""path"": ""2DVector(whichSideWins=1)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -72,26 +83,37 @@ namespace plasa.input
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""negative"",
-                    ""id"": ""620ed99c-6f6d-4da9-aed6-397aff39f3cf"",
+                    ""name"": ""Left"",
+                    ""id"": ""5132ac58-08cf-4f9e-bf29-7964bd80c76a"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard & Mouse"",
+                    ""groups"": """",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""positive"",
-                    ""id"": ""a3fab5bc-2c87-4c10-83d7-2a2ce95145f3"",
+                    ""name"": ""Right"",
+                    ""id"": ""371a456a-cb46-409b-b300-7bf4bbea5c16"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard & Mouse"",
+                    ""groups"": """",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""91aa9f1b-7aa0-4d3c-b5bd-bbc9c256d860"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -119,7 +141,7 @@ namespace plasa.input
             ""devices"": [
                 {
                     ""devicePath"": ""<Gamepad>"",
-                    ""isOptional"": true,
+                    ""isOptional"": false,
                     ""isOR"": false
                 }
             ]
