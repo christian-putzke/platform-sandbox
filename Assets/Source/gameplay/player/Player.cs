@@ -13,6 +13,9 @@ namespace plasa.gameplay.player
 		[SerializeField]
 		private float _jumpForce = 1f;
 
+		[SerializeField]
+		private Collider _collider;
+
 		private Rigidbody _rigidbody;
 		private InputActions _inputActions;
 
@@ -28,8 +31,19 @@ namespace plasa.gameplay.player
 
 		private void FixedUpdate()
 		{
-			var direction = _inputActions.Player.Move.ReadValue<Vector2>();
-			_rigidbody.AddForce(new Vector3(direction.x, 0f, 0f) * _movementSpeed, ForceMode.Force);
+			if (_inputActions.Player.Move.IsInProgress()) {
+				var direction = _inputActions.Player.Move.ReadValue<Vector2>();
+				Move(direction);
+			}
+		}
+
+		private void Move(Vector2 direction)
+		{
+			var currentPosition = transform.position;
+			currentPosition.x += direction.x * _movementSpeed * Time.deltaTime;
+
+			_rigidbody.MovePosition(currentPosition);
+			//_rigidbody.AddForce(new Vector3(direction.x, 0f, 0f) * _movementSpeed, ForceMode.Force);
 		}
 
 		public void Jump(InputAction.CallbackContext context)
