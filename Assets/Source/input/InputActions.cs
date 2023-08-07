@@ -46,6 +46,15 @@ namespace plasa.input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Grab"",
+                    ""type"": ""Button"",
+                    ""id"": ""30c60f84-7490-4782-9e07-2a089f3af72f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -73,8 +82,8 @@ namespace plasa.input
                 },
                 {
                     ""name"": ""2D Vector"",
-                    ""id"": ""2fd73cc4-8be8-4313-bd8b-d84141bd6c51"",
-                    ""path"": ""2DVector(whichSideWins=1)"",
+                    ""id"": ""5b840018-e3c7-492a-9b55-c8e70024ee28"",
+                    ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -83,23 +92,45 @@ namespace plasa.input
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""Left"",
-                    ""id"": ""5132ac58-08cf-4f9e-bf29-7964bd80c76a"",
-                    ""path"": ""<Keyboard>/a"",
+                    ""name"": ""up"",
+                    ""id"": ""13d83ed6-ac39-46a7-b202-f73b1ced05b3"",
+                    ""path"": """",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard & Mouse"",
+                    ""groups"": """",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""Right"",
-                    ""id"": ""371a456a-cb46-409b-b300-7bf4bbea5c16"",
+                    ""name"": ""down"",
+                    ""id"": ""020a8c0e-1182-49f3-90ca-12aaffb73c59"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""165906f6-a20e-4f09-b191-3b219368a97b"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""57d8650c-bff1-476b-8574-b146774e1a63"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard & Mouse"",
+                    ""groups"": """",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -112,6 +143,28 @@ namespace plasa.input
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ba6dc841-69e3-4a29-9bd1-f07508152bc3"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Grab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5eb70df9-c891-482b-b4df-e123a3efc6b4"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Grab"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -152,6 +205,7 @@ namespace plasa.input
             m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
             m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
+            m_Player_Grab = m_Player.FindAction("Grab", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -215,12 +269,14 @@ namespace plasa.input
         private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
         private readonly InputAction m_Player_Jump;
         private readonly InputAction m_Player_Move;
+        private readonly InputAction m_Player_Grab;
         public struct PlayerActions
         {
             private @InputActions m_Wrapper;
             public PlayerActions(@InputActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Jump => m_Wrapper.m_Player_Jump;
             public InputAction @Move => m_Wrapper.m_Player_Move;
+            public InputAction @Grab => m_Wrapper.m_Player_Grab;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -236,6 +292,9 @@ namespace plasa.input
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
+                @Grab.started += instance.OnGrab;
+                @Grab.performed += instance.OnGrab;
+                @Grab.canceled += instance.OnGrab;
             }
 
             private void UnregisterCallbacks(IPlayerActions instance)
@@ -246,6 +305,9 @@ namespace plasa.input
                 @Move.started -= instance.OnMove;
                 @Move.performed -= instance.OnMove;
                 @Move.canceled -= instance.OnMove;
+                @Grab.started -= instance.OnGrab;
+                @Grab.performed -= instance.OnGrab;
+                @Grab.canceled -= instance.OnGrab;
             }
 
             public void RemoveCallbacks(IPlayerActions instance)
@@ -285,6 +347,7 @@ namespace plasa.input
         {
             void OnJump(InputAction.CallbackContext context);
             void OnMove(InputAction.CallbackContext context);
+            void OnGrab(InputAction.CallbackContext context);
         }
     }
 }

@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Grab",
+                    "type": "Button",
+                    "id": "30c60f84-7490-4782-9e07-2a089f3af72f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -49,8 +58,8 @@
                 },
                 {
                     "name": "2D Vector",
-                    "id": "2fd73cc4-8be8-4313-bd8b-d84141bd6c51",
-                    "path": "2DVector(whichSideWins=1)",
+                    "id": "5b840018-e3c7-492a-9b55-c8e70024ee28",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -59,23 +68,45 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "Left",
-                    "id": "5132ac58-08cf-4f9e-bf29-7964bd80c76a",
-                    "path": "<Keyboard>/a",
+                    "name": "up",
+                    "id": "13d83ed6-ac39-46a7-b202-f73b1ced05b3",
+                    "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard & Mouse",
+                    "groups": "",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "Right",
-                    "id": "371a456a-cb46-409b-b300-7bf4bbea5c16",
+                    "name": "down",
+                    "id": "020a8c0e-1182-49f3-90ca-12aaffb73c59",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "165906f6-a20e-4f09-b191-3b219368a97b",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "57d8650c-bff1-476b-8574-b146774e1a63",
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard & Mouse",
+                    "groups": "",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -88,6 +119,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ba6dc841-69e3-4a29-9bd1-f07508152bc3",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Grab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5eb70df9-c891-482b-b4df-e123a3efc6b4",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Grab",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
