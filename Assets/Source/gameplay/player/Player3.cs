@@ -1,4 +1,5 @@
 using plasa.input;
+using plasa.animation;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -10,13 +11,10 @@ namespace plasa.gameplay.player
 	public class Player3 : MonoBehaviour
 	{
 		[SerializeField]
-		private Transform _characerVisuals;
+		private Player3Visuals _visuals;
 
 		[SerializeField]
 		private CharacterController _characterController;
-
-		[SerializeField]
-		private Animator _animator;
 
 		[Header("Horizontal Speed")]
 		[SerializeField]
@@ -29,8 +27,6 @@ namespace plasa.gameplay.player
 		[SerializeField]
 		private float _horizontalSpeedReductionWhileGrounded;
 
-		[SerializeField]
-		private float _rotationSpeed;
 
 		[Header("Vertical Speed")]
 		[SerializeField]
@@ -56,25 +52,18 @@ namespace plasa.gameplay.player
 		[SerializeField]
 		private Vector3 _groundCheckSize;
 
-		private bool _isViewingLeft;
-		private float _rotationTime;
-		private Vector3 _rotationStart;
-		private Vector3? _rotationTarget = null;
 		private InputActions _inputActions;
-		private Vector3 _speed = Vector3.zero;
+		private Vector3 _velocity = Vector3.zero;
 		private Vector3 _speedWhenJumpStarted;
-
-		private int _animatorHorizontalMovement;
-
 
 		private void Awake()
 		{
-			_animatorHorizontalMovement = Animator.StringToHash("HorizontalMovement");
-
 			_characterController = GetComponent<CharacterController>();
 
 			_inputActions = new InputActions();
 			_inputActions.Enable(); // be careful, this enables ALL control schemes (keyboard AND gamepad)
+
+			_visuals.Setup();
 		}
 
 		public bool IsGrounded()
@@ -87,77 +76,52 @@ namespace plasa.gameplay.player
 		{
 			var isGrounded = IsGrounded();
 
-			debug.ui.WriteText($"_speed: {_speed}", true);
+			debug.ui.WriteText($"_speed: {_velocity}", true);
 			debug.ui.WriteText($"_speedWhenJumpStarted: {_speedWhenJumpStarted}");
 			debug.ui.WriteText($"isGrounded: {isGrounded}");
 
 			if (isGrounded && _inputActions.Player.Jump.WasPerformedThisFrame()) {
-				_speedWhenJumpStarted = _speed;
-				_speed.y = 5f;
+				_speedWhenJumpStarted = _velocity;
+				_velocity.y = 5f;
 			} else if (!isGrounded) {
-				_speed.y -= 0.01f;
-			} else if (_speed.y <= 0.01f && isGrounded) {
-				_speed.y = 0f;
+				_velocity.y -= 0.01f;
+			} else if (_velocity.y <= 0.01f && isGrounded) {
+				_velocity.y = 0f;
 			}
 
 			if (isGrounded) {
-				_speed = HorizontalMovementWhileGrounded(_speed);
+				_velocity = HorizontalMovementWhileGrounded(_velocity);
 			} else {
-				_speed = HorizontalMovementWhileJumping(_speed);
+				_velocity = HorizontalMovementWhileJumping(_velocity);
 			}
 
-			Move(_speed);
-			AnimationTest();
+			Move(_velocity);
+			_visuals.Animate();
 		}
 
-		private void AnimationTest()
-		{
-			if (!_rotationTarget.HasValue) {
-				return;
-			}
-
-			var targetRotation = Vector3.Lerp(_rotationStart, _rotationTarget.Value, _rotationTime);
-			_characerVisuals.transform.rotation = Quaternion.Euler(targetRotation);
-
-			if (_rotationTime >= 1f) {
-				_rotationTarget = null;
-			}
-
-			_rotationTime += _rotationSpeed * Time.deltaTime;
-		}
-
-		private Vector3 HorizontalMovementWhileGrounded(Vector3 speed)
+		private Vector3 HorizontalMovementWhileGrounded(Vector3 velocity)
 		{
 			if (_inputActions.Player.Move.IsInProgress()) {
 				var direction = _inputActions.Player.Move.ReadValue<Vector2>();
+				var velocityX = direction.x * _horizontalSpeed;
 
-				if (_isViewingLeft && direction.x > 0f) {
-					_isViewingLeft = false;
-					_rotationTime = 0;
-					_rotationStart = _characerVisuals.transform.rotation.eulerAngles;
-					_rotationTarget = new Vector3(_rotationStart.x, 90, _rotationStart.z);
-					_animator.SetTrigger("TurnRight");
-				} else if (!_isViewingLeft && direction.x < 0f) {
-					_isViewingLeft = true;
-					_rotationTime = 0;
-					_rotationStart = _characerVisuals.transform.rotation.eulerAngles;
-					_rotationTarget = new Vector3(_rotationStart.x, 270, _rotationStart.z);
-					_animator.SetTrigger("TurnLeft");
-				} else if (_rotationTarget == null) {
-					speed.x = direction.x * _horizontalSpeed;
+				_visuals.StartRotationIfNeeded(velocityX);
+
+				if (!_visuals.IsRotating) {
+					velocity.x = velocityX;
 				}
 			} else {
 				// TODO: Improve by adding lerp
-				if (speed.x > 0f) {
-					speed.x = Mathf.Max(_speed.x - _horizontalSpeedReductionWhileGrounded, 0f);
+				if (velocity.x > 0f) {
+					velocity.x = Mathf.Max(_velocity.x - _horizontalSpeedReductionWhileGrounded, 0f);
 				} else {
-					speed.x = Mathf.Min(_speed.x + _horizontalSpeedReductionWhileGrounded, 0f);
+					velocity.x = Mathf.Min(_velocity.x + _horizontalSpeedReductionWhileGrounded, 0f);
 				}
 			}
 
-			debug.ui.WriteText($"speed: {speed}");
+			debug.ui.WriteText($"velocity: {velocity}");
 
-			return speed;
+			return velocity;
 		}
 
 		private Vector3 HorizontalMovementWhileJumping(Vector3 speed)

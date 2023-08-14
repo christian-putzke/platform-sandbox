@@ -417,13 +417,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d79aae095a04436696eed6a78ebc70e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characerVisuals: {fileID: 894171932}
+  _visuals: {fileID: 894171933}
   _characterController: {fileID: 278959277}
-  _animator: {fileID: 1928935980}
   _horizontalSpeed: 5
   _horizontalSpeedReductionWhileJumping: 0.75
   _horizontalSpeedReductionWhileGrounded: 0.025
-  _rotationSpeed: 1
   _jumpForce: 1
   _minFallSpeed: 8
   _maxFallSpeed: 15
@@ -996,6 +994,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 894171932}
+  - component: {fileID: 894171933}
   m_Layer: 0
   m_Name: Visuals
   m_TagString: Untagged
@@ -1019,6 +1018,23 @@ Transform:
   - {fileID: 1928935978}
   m_Father: {fileID: 278959273}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &894171933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894171931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3429da8ca4274d3891bc701f3055aad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 1928935980}
+  _rotationSpeed: 1.5
+  _transformRotationLookLeft: -90
+  _transformRotationLookRight: 90
+  _isViewDirectionLeft: 0
 --- !u!43 &1002286818
 Mesh:
   m_ObjectHideFlags: 0
