@@ -1,4 +1,6 @@
 using plasa.input;
+using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,18 +10,27 @@ namespace plasa.gameplay.player
 	public class Player3 : MonoBehaviour
 	{
 		[SerializeField]
+		private Transform _characerVisuals;
+
+		[SerializeField]
 		private CharacterController _characterController;
+
+		[SerializeField]
+		private Animator _animator;
 
 		[Header("Horizontal Speed")]
 		[SerializeField]
 		private float _horizontalSpeed;
 
-		[Range(0,1)]
+		[Range(0, 1)]
 		[SerializeField]
 		private float _horizontalSpeedReductionWhileJumping;
 
 		[SerializeField]
 		private float _horizontalSpeedReductionWhileGrounded;
+
+		[SerializeField]
+		private float _rotationSpeed;
 
 		[Header("Vertical Speed")]
 		[SerializeField]
@@ -45,13 +56,21 @@ namespace plasa.gameplay.player
 		[SerializeField]
 		private Vector3 _groundCheckSize;
 
-
+		private bool _isViewingLeft;
+		private float _rotationTime;
+		private Vector3 _rotationStart;
+		private Vector3? _rotationTarget = null;
 		private InputActions _inputActions;
-		private Vector3 _speed = Vector3.one;
+		private Vector3 _speed = Vector3.zero;
 		private Vector3 _speedWhenJumpStarted;
+
+		private int _animatorHorizontalMovement;
+
 
 		private void Awake()
 		{
+			_animatorHorizontalMovement = Animator.StringToHash("HorizontalMovement");
+
 			_characterController = GetComponent<CharacterController>();
 
 			_inputActions = new InputActions();
@@ -72,63 +91,81 @@ namespace plasa.gameplay.player
 			debug.ui.WriteText($"_speedWhenJumpStarted: {_speedWhenJumpStarted}");
 			debug.ui.WriteText($"isGrounded: {isGrounded}");
 
-			if (isGrounded && _inputActions.Player.Jump.WasPerformedThisFrame())
-			{
+			if (isGrounded && _inputActions.Player.Jump.WasPerformedThisFrame()) {
 				_speedWhenJumpStarted = _speed;
 				_speed.y = 5f;
-			}
-			else if (!isGrounded)
-			{
+			} else if (!isGrounded) {
 				_speed.y -= 0.01f;
-			}
-			else if (_speed.y <= 0.01f && isGrounded)
-			{
+			} else if (_speed.y <= 0.01f && isGrounded) {
 				_speed.y = 0f;
 			}
 
-			if (isGrounded)
-			{
+			if (isGrounded) {
 				_speed = HorizontalMovementWhileGrounded(_speed);
-			}
-			else
-			{
+			} else {
 				_speed = HorizontalMovementWhileJumping(_speed);
 			}
 
 			Move(_speed);
+			AnimationTest();
+		}
+
+		private void AnimationTest()
+		{
+			if (!_rotationTarget.HasValue) {
+				return;
+			}
+
+			var targetRotation = Vector3.Lerp(_rotationStart, _rotationTarget.Value, _rotationTime);
+			_characerVisuals.transform.rotation = Quaternion.Euler(targetRotation);
+
+			if (_rotationTime >= 1f) {
+				_rotationTarget = null;
+			}
+
+			_rotationTime += _rotationSpeed * Time.deltaTime;
 		}
 
 		private Vector3 HorizontalMovementWhileGrounded(Vector3 speed)
 		{
-			if (_inputActions.Player.Move.IsInProgress())
-			{
+			if (_inputActions.Player.Move.IsInProgress()) {
 				var direction = _inputActions.Player.Move.ReadValue<Vector2>();
-				speed.x = direction.x * _horizontalSpeed;
-			}
-			else
-			{
-				// TODO: Improve by adding lerp
-				if (speed.x > 0f)
-				{
-					speed.x = Mathf.Max(_speed.x - _horizontalSpeedReductionWhileGrounded, 0f);
+
+				if (_isViewingLeft && direction.x > 0f) {
+					_isViewingLeft = false;
+					_rotationTime = 0;
+					_rotationStart = _characerVisuals.transform.rotation.eulerAngles;
+					_rotationTarget = new Vector3(_rotationStart.x, 90, _rotationStart.z);
+					_animator.SetTrigger("TurnRight");
+				} else if (!_isViewingLeft && direction.x < 0f) {
+					_isViewingLeft = true;
+					_rotationTime = 0;
+					_rotationStart = _characerVisuals.transform.rotation.eulerAngles;
+					_rotationTarget = new Vector3(_rotationStart.x, 270, _rotationStart.z);
+					_animator.SetTrigger("TurnLeft");
+				} else if (_rotationTarget == null) {
+					speed.x = direction.x * _horizontalSpeed;
 				}
-				else
-				{
+			} else {
+				// TODO: Improve by adding lerp
+				if (speed.x > 0f) {
+					speed.x = Mathf.Max(_speed.x - _horizontalSpeedReductionWhileGrounded, 0f);
+				} else {
 					speed.x = Mathf.Min(_speed.x + _horizontalSpeedReductionWhileGrounded, 0f);
 				}
 			}
+
+			debug.ui.WriteText($"speed: {speed}");
 
 			return speed;
 		}
 
 		private Vector3 HorizontalMovementWhileJumping(Vector3 speed)
 		{
-			if (_inputActions.Player.Move.IsInProgress())
-			{
+			if (_inputActions.Player.Move.IsInProgress()) {
 				var direction = _inputActions.Player.Move.ReadValue<Vector2>();
 
-				if (direction.x > 0f && speed.x < 0f || direction.x < 0f && speed.x > 0f)
-				{
+				if (direction.x > 0f && speed.x < 0f || direction.x < 0f && speed.x > 0f) {
 					speed.x = _speedWhenJumpStarted.x * _horizontalSpeedReductionWhileJumping;
 				}
 			}
