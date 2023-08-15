@@ -63,15 +63,15 @@ namespace plasa.gameplay.player
 			_rotationTime += _rotationSpeed * Time.deltaTime;
 		}
 
-		public void StartRotationIfNeeded(float directionX, float speed)
+		public void StartRotationIfNeeded(float directionX, float velocityX)
 		{
-			if (_isViewDirectionLeft && directionX > 0f && speed <= 0.01f) {
+			if (_isViewDirectionLeft && directionX > 0f && velocityX >= 0f) {
 				_isViewDirectionLeft = false;
 				_rotationTime = 0;
 				_rotationStart = transform.rotation.eulerAngles;
 				_rotationTarget = new Vector3(_rotationStart.x, _transformRotationLookRight, _rotationStart.z);
 				_animator.SetTrigger(AnimatorTriggerHash.TurnRight);
-			} else if (!_isViewDirectionLeft && directionX < 0f && speed <= 0.01f) {
+			} else if (!_isViewDirectionLeft && directionX < 0f && velocityX <= 0f) {
 				_isViewDirectionLeft = true;
 				_rotationTime = 0;
 				_rotationStart = transform.rotation.eulerAngles;

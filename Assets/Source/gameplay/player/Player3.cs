@@ -120,7 +120,7 @@ namespace plasa.gameplay.player
 			if (isMoveInProgress) {
 				var direction = _inputActions.Player.Move.ReadValue<Vector2>();
 
-				_visuals.StartRotationIfNeeded(direction.x, Mathf.Abs(velocity.x));
+				_visuals.StartRotationIfNeeded(direction.x, velocity.x);
 
 				var acceleration = _horizontalAccelerationWhileGrounded;
 				if (velocity.x < 0 && direction.x > 0 || velocity.x > 0 && direction.x < 0) {

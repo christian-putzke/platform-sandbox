@@ -419,7 +419,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _visuals: {fileID: 894171933}
   _characterController: {fileID: 278959277}
-  _maxVelocity: {x: 2, y: 15, z: 0}
+  _maxVelocity: {x: 1.93, y: 15, z: 0}
   _horizontalDecelerationWhileGrounded: 7
   _horizontalAccelerationWhileGrounded: 4
   _horizontalCounterAccelerationWhileGrounded: 10
@@ -1013,7 +1013,7 @@ Transform:
   m_GameObject: {fileID: 894171931}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -1.015, z: 0}
+  m_LocalPosition: {x: 0, y: -1.05, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
