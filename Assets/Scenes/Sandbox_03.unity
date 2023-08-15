@@ -419,7 +419,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _visuals: {fileID: 894171933}
   _characterController: {fileID: 278959277}
-  _maxVelocity: {x: 1.93, y: 15, z: 0}
+  _horizontalWalkingMaxVelocityWhileGrounded: 2.04
+  _horizontalRunningMaxVelocityWhileGrounded: 4
   _horizontalDecelerationWhileGrounded: 7
   _horizontalAccelerationWhileGrounded: 4
   _horizontalCounterAccelerationWhileGrounded: 10

@@ -42,9 +42,9 @@ namespace plasa.gameplay.player
 		}
 
 
-		public void Animate(Vector3 velocity, Vector3 maxVelocity)
+		public void Animate(Vector3 velocity, float maxVelocityX)
 		{
-			UpdateVelocity(velocity, maxVelocity);
+			UpdateVelocity(velocity, maxVelocityX);
 
 			if (_rotationTarget.HasValue) {
 				Rotate(_rotationTarget.Value);
@@ -80,9 +80,9 @@ namespace plasa.gameplay.player
 			}
 		}
 
-		private void UpdateVelocity(Vector3 velocity, Vector3 maxVelocity)
+		private void UpdateVelocity(Vector3 velocity, float maxVelocityX)
 		{
-			var velocityPercentageX = Mathf.Abs(velocity.x) / maxVelocity.x;
+			var velocityPercentageX = Mathf.Abs(velocity.x) / maxVelocityX;
 			_animator.SetFloat(AnimatorTriggerHash.VelocityX, velocityPercentageX);
 		}
 	}

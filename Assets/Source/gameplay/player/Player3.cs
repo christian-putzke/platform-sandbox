@@ -13,10 +13,13 @@ namespace plasa.gameplay.player
 		[SerializeField]
 		private CharacterController _characterController;
 
+		[Header("Horizontal Velocity")]
 		[SerializeField]
-		private Vector3 _maxVelocity;
+		private float _horizontalWalkingMaxVelocityWhileGrounded;
 
-		[Header("Horizontal Speed")]
+		[SerializeField]
+		private float _horizontalRunningMaxVelocityWhileGrounded;
+
 		[SerializeField]
 		private float _horizontalDecelerationWhileGrounded;
 
@@ -101,13 +104,13 @@ namespace plasa.gameplay.player
 			_velocity = SanitizeVelocity(_velocity);
 
 			Move(_velocity);
-			_visuals.Animate(_velocity, _maxVelocity);
+			_visuals.Animate(_velocity, _horizontalRunningMaxVelocityWhileGrounded);
 		}
 
 		private Vector3 SanitizeVelocity(Vector3 velocity)
 		{
 			return new Vector3(
-				Mathf.Clamp(velocity.x, _maxVelocity.x * -1, _maxVelocity.x),
+				Mathf.Clamp(velocity.x, _horizontalRunningMaxVelocityWhileGrounded * -1, _horizontalRunningMaxVelocityWhileGrounded),
 				velocity.y,
 				velocity.z
 			);
@@ -118,7 +121,9 @@ namespace plasa.gameplay.player
 			var isMoveInProgress = _inputActions.Player.Move.IsInProgress();
 
 			if (isMoveInProgress) {
+				float velocityX;
 				var direction = _inputActions.Player.Move.ReadValue<Vector2>();
+				var currentMaxVelcoityX = GetCurrentMaxVelcoityX();
 
 				_visuals.StartRotationIfNeeded(direction.x, velocity.x);
 
@@ -127,12 +132,21 @@ namespace plasa.gameplay.player
 					acceleration = _horizontalCounterAccelerationWhileGrounded;
 				}
 
-				float velocityX;
 				if (direction.x > 0f) {
-					velocityX = velocity.x + (acceleration * Time.deltaTime) * direction.x;
+					if (velocity.x > currentMaxVelcoityX) {
+						velocityX = Mathf.Max(velocity.x - (_horizontalDecelerationWhileGrounded * Time.deltaTime), currentMaxVelcoityX);
+					} else {
+						velocityX = velocity.x + (acceleration * Time.deltaTime);
+					}
 				} else {
-					velocityX = _velocity.x - (acceleration * Time.deltaTime) * Mathf.Abs(direction.x);
+					if (velocity.x < currentMaxVelcoityX * -1) {
+						velocityX = Mathf.Min(velocity.x + (_horizontalDecelerationWhileGrounded * Time.deltaTime), currentMaxVelcoityX * -1);
+					} else {
+						velocityX = velocity.x - (acceleration * Time.deltaTime);
+					}
 				}
+
+				velocityX *= Mathf.Abs(direction.x);
 
 				if (!_visuals.IsRotating) {
 					velocity.x = velocityX;
@@ -142,13 +156,22 @@ namespace plasa.gameplay.player
 				}
 			} else {
 				if (velocity.x > 0f) {
-					velocity.x = Mathf.Max(_velocity.x - (_horizontalDecelerationWhileGrounded * Time.deltaTime), 0f);
+					velocity.x = Mathf.Max(velocity.x - (_horizontalDecelerationWhileGrounded * Time.deltaTime), 0f);
 				} else {
-					velocity.x = Mathf.Min(_velocity.x + (_horizontalDecelerationWhileGrounded * Time.deltaTime), 0f);
+					velocity.x = Mathf.Min(velocity.x + (_horizontalDecelerationWhileGrounded * Time.deltaTime), 0f);
 				}
 			}
 
 			return velocity;
+		}
+
+		private float GetCurrentMaxVelcoityX()
+		{
+			if (_inputActions.Player.Run.IsInProgress()) {
+				return _horizontalRunningMaxVelocityWhileGrounded;
+			}
+
+			return _horizontalWalkingMaxVelocityWhileGrounded;
 		}
 
 		private Vector3 HorizontalMovementWhileJumping(Vector3 velocity)
