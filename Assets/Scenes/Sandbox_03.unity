@@ -1035,6 +1035,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _animator: {fileID: 1313799026}
   _rotationSpeed: 1.5
+  _rotationSpeed2: 1.5
   _transformRotationLookLeft: 270
   _transformRotationLookRight: 90
   _isViewDirectionLeft: 0

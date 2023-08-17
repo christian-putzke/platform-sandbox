@@ -125,10 +125,10 @@ namespace plasa.gameplay.player
 				var direction = _inputActions.Player.Move.ReadValue<Vector2>();
 				var currentMaxVelcoityX = GetCurrentMaxVelcoityX();
 
-				_visuals.StartRotationIfNeeded(direction.x, velocity.x);
+				_visuals.StartRotationIfNeeded(direction.x, velocity.x, _horizontalRunningMaxVelocityWhileGrounded);
 
 				var acceleration = _horizontalAccelerationWhileGrounded;
-				if (velocity.x < 0 && direction.x > 0 || velocity.x > 0 && direction.x < 0) {
+				if (velocity.x < 0 && direction.x > 0 || velocity.x > 0 && direction.x < 0 || _inputActions.Player.Run.IsInProgress()) {
 					acceleration = _horizontalCounterAccelerationWhileGrounded;
 				}
 

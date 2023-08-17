@@ -13,6 +13,9 @@ namespace plasa.gameplay.player
 		private float _rotationSpeed;
 
 		[SerializeField]
+		private float _rotationSpeed2;
+
+		[SerializeField]
 		private float _transformRotationLookLeft;
 
 		[SerializeField]
@@ -23,10 +26,10 @@ namespace plasa.gameplay.player
 
 
 		private float _rotationTime;
-		private Vector3 _rotationStart;
+		private Vector3? _rotationStart = null;
 		private Vector3? _rotationTarget = null;
 
-		public bool IsRotating => _rotationTarget != null;
+		public bool IsRotating => _rotationStart != null;
 
 		public void Setup()
 		{
@@ -46,37 +49,74 @@ namespace plasa.gameplay.player
 		{
 			UpdateVelocity(velocity, maxVelocityX);
 
-			if (_rotationTarget.HasValue) {
-				Rotate(_rotationTarget.Value);
+			if (_rotationTarget.HasValue && _rotationStart.HasValue) {
+				Rotate(_rotationTarget.Value, _rotationStart.Value);
+			} else if (_rotationTarget.HasValue) {
+				Rotate2(_rotationTarget.Value);
 			}
 		}
 
-		private void Rotate(Vector3 rotationTarget)
+		// slow rotation
+		private void Rotate(Vector3 rotationTarget, Vector3 rotationStart)
 		{
-			var lerpedRotation = Vector3.Lerp(_rotationStart, rotationTarget, _rotationTime);
+			var lerpedRotation = Vector3.Lerp(rotationStart, rotationTarget, _rotationTime);
 			transform.rotation = Quaternion.Euler(lerpedRotation);
 
 			if (_rotationTime >= 1f) {
 				_rotationTarget = null;
+				_rotationStart = null;
 			}
 
 			_rotationTime += _rotationSpeed * Time.deltaTime;
 		}
 
-		public void StartRotationIfNeeded(float directionX, float velocityX)
+		// run rotation
+		private void Rotate2(Vector3 rotationTarget)
 		{
-			if (_isViewDirectionLeft && directionX > 0f && velocityX >= 0f) {
-				_isViewDirectionLeft = false;
-				_rotationTime = 0;
-				_rotationStart = transform.rotation.eulerAngles;
-				_rotationTarget = new Vector3(_rotationStart.x, _transformRotationLookRight, _rotationStart.z);
-				_animator.SetTrigger(AnimatorTriggerHash.TurnRight);
-			} else if (!_isViewDirectionLeft && directionX < 0f && velocityX <= 0f) {
-				_isViewDirectionLeft = true;
-				_rotationTime = 0;
-				_rotationStart = transform.rotation.eulerAngles;
-				_rotationTarget = new Vector3(_rotationStart.x, _transformRotationLookLeft, _rotationStart.z);
-				_animator.SetTrigger(AnimatorTriggerHash.TurnLeft);
+			if (_rotationTime >= 1f) {
+				
+				_rotationTarget = null;
+				_rotationStart = null;
+				transform.rotation = Quaternion.Euler(rotationTarget);
+			}
+
+			_rotationTime += _rotationSpeed2 * Time.deltaTime;
+		}
+
+		public void StartRotationIfNeeded(float directionX, float velocityX, float currentMaxVelcoityX)
+		{
+			var velocityPercentageX = Mathf.Abs(velocityX) / currentMaxVelcoityX;
+
+			if (_isViewDirectionLeft && directionX > 0f) {
+				if (velocityX >= 0f) { // slow rotation right
+					_isViewDirectionLeft = false;
+					_rotationTime = 0;
+					_rotationStart = transform.rotation.eulerAngles;
+					_rotationTarget = new Vector3(_rotationStart.Value.x, _transformRotationLookRight, _rotationStart.Value.z);
+					_animator.SetTrigger(AnimatorTriggerHash.TurnRight);
+				} else if (velocityPercentageX > 0.6) { // run rotation right
+					_isViewDirectionLeft = false;
+					_rotationTime = 0;
+					_rotationStart = null;
+					var rotationStart = transform.rotation.eulerAngles;
+					_rotationTarget = new Vector3(rotationStart.x, _transformRotationLookRight, rotationStart.z);
+					_animator.SetTrigger(AnimatorTriggerHash.RunningTurnRight);
+				}
+			} else if (!_isViewDirectionLeft && directionX < 0f) {
+				if (velocityX <= 0f) { // slow rotation left
+					_isViewDirectionLeft = true;
+					_rotationTime = 0;
+					_rotationStart = transform.rotation.eulerAngles;
+					_rotationTarget = new Vector3(_rotationStart.Value.x, _transformRotationLookLeft, _rotationStart.Value.z);
+					_animator.SetTrigger(AnimatorTriggerHash.TurnLeft);
+				} else if (velocityPercentageX > 0.6) { // run rotation left
+					_isViewDirectionLeft = true;
+					_rotationTime = 0;
+					_rotationStart = null;
+					var rotationStart = transform.rotation.eulerAngles;
+					_rotationTarget = new Vector3(rotationStart.x, _transformRotationLookLeft, rotationStart.z);
+					_animator.SetTrigger(AnimatorTriggerHash.RunningTurnLeft);
+				}
 			}
 		}
 
