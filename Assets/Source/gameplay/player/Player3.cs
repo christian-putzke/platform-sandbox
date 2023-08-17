@@ -123,6 +123,7 @@ namespace plasa.gameplay.player
 			if (isMoveInProgress) {
 				float velocityX;
 				var direction = _inputActions.Player.Move.ReadValue<Vector2>();
+				debug.ui.WriteText($"direction: {direction}");
 				var currentMaxVelcoityX = GetCurrentMaxVelcoityX();
 
 				_visuals.StartRotationIfNeeded(direction.x, velocity.x, _horizontalRunningMaxVelocityWhileGrounded);
@@ -146,7 +147,9 @@ namespace plasa.gameplay.player
 					}
 				}
 
-				velocityX *= Mathf.Abs(direction.x);
+				debug.ui.WriteText($"velocityX #1: {velocityX}");
+				// velocityX *= Mathf.Abs(direction.x);
+				debug.ui.WriteText($"velocityX #2: {velocityX}");
 
 				if (!_visuals.IsRotating) {
 					velocity.x = velocityX;
